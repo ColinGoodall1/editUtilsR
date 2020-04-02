@@ -48,7 +48,7 @@ By default, any risky package, requiring say a particular version of Java or som
 
 https://cran.r-project.org/bin/windows/base/rw-FAQ.html
 
-existing text:-
+## existing text:-
 
 2.8 What’s the best way to upgrade?
 
@@ -56,7 +56,7 @@ That’s a matter of taste. For most people the best thing to do is to uninstall
 
 For those with a personal library (folder R\win-library\x.y of your home directory, R\win64-library\x.y on 64-bit builds), you will need to update that too when the minor version of R changes (e.g. from 3.0.2 to 3.1.0). A simple way to do so is to copy (say) R\win-library\3.0 to R\win-library\3.1 before running update.packages(checkBuilt=TRUE, ask=FALSE). 
 
-proposed text:-
+## proposed text:-
 
 2.8 What’s the best way to upgrade?
 
@@ -72,25 +72,46 @@ The personal library defaults to Documents/R/win-library/x.y, with separate fold
 
 # new function arguments:-
 
-noDupl                  skip duplicate packages, default TRUE
-						argument to old.packages and update.packages (which passes the argument to old.packages)
-						the default TRUE is the same for both packages, and likewise for other arguments
+### noDupl
+
+skip duplicate packages, default TRUE
+
+argument to old.packages and update.packages (which passes the argument to old.packages)
 						
-noInstallRHOME          do not attempt to install in R_HOME/library, default TRUE
-						argument to update.packages (passes to install.packages) and install.packages (passes to .libPaths)
-
-noRHOME                 do not include R_HOME/library in .libPaths(), default FALSE
-						argument noInstallRHOME is passed as noRHOME from install.packages
-
-latest                  return the latest library with given name, otherwise return the first library in libPaths, default TRUE
-						argument to find.package() and library (which passes the argument to find.package)
-
-showVersion             return all versions of requested packages, default FALSE
-						argument to find.package
-
-saveOld                 save the previous version of the library, in subfolder of 01SAVE/
-						argument to install.packages and update.packages (passes to install.packages)
+the default TRUE is the same for both packages, and likewise for other arguments
 						
+### noInstallRHOME         
+
+do not attempt to install in R_HOME/library, default TRUE
+						
+argument to update.packages (passes to install.packages) and install.packages (passes to .libPaths)
+
+### noRHOME                
+
+do not include R_HOME/library in .libPaths(), default FALSE
+
+argument noInstallRHOME is passed as noRHOME from install.packages
+
+### latest             
+
+return the latest library with given name, otherwise return the first library in libPaths, default TRUE
+
+argument to find.package() and library (which passes the argument to find.package)
+
+### showVersion             
+
+return all versions of requested packages, default FALSE
+
+argument to find.package
+
+saveOld                
+
+save the previous version of the library, in subfolder of 01SAVE/
+
+argument to install.packages and update.packages (passes to install.packages)
+						
+
+
 
 # issues:-
 
