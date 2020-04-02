@@ -104,7 +104,7 @@ return all versions of requested packages, default FALSE
 
 argument to find.package
 
-saveOld                
+### saveOld                
 
 save the previous version of the library, in subfolder of 01SAVE/
 
@@ -117,9 +117,13 @@ argument to install.packages and update.packages (passes to install.packages)
 
 internal objects cannot be referenced in an edited function (special compilation needed?).  I haven't dipped into source code (yet).
 thus:-
+
 (1) new .libPaths with additional argument noRHOME calls base:::.libPaths() to access .lib.loc
+
 (2) installed.libraries() references .instPkgFields etc, no edits provided
+
 (3) update.packages() references simplifyRepos, getDependencies, etc, edits provided but function does not update packages, needs a core team intervention?
+
 (4) no digging into .install.winbinary() called from install.packages()
 
 # sample calls:-
@@ -141,6 +145,5 @@ find.package("nlme",verbose=T,latest=F)
 find.package(c("class","nlme"),verbose=T,latest=T,showVersion=T)
 find.package(c("class","nlme"),verbose=T,latest=F,showVersion=T)
 
-args(update.packages)
-update.packages()   # does not execute, simplifyRepos, getDependencies not find
+update.packages()   # does not execute, simplifyRepos, getDependencies not found
 
