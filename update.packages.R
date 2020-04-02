@@ -1,7 +1,8 @@
-update.packages.0 <-
+update.packages <-
 function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(repos, 
     type), method, instlib = NULL, ask = TRUE, available = NULL, 
-    oldPkgs = NULL, ..., checkBuilt = FALSE, type = getOption("pkgType")) 
+    oldPkgs = NULL, ..., checkBuilt = FALSE, type = getOption("pkgType"),
+	noDupl = TRUE, noInstallRHOME = TRUE, saveOld = TRUE) 
 {
     force(ask)
     text.select <- function(old) {
@@ -11,7 +12,7 @@ function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(r
                 "installed in", old[k, "LibPath"], if (checkBuilt) 
                   paste("built under R", old[k, "Built"]), "\n", 
                 "Version", old[k, "ReposVer"], "available at", 
-                simplifyRepos(old[k, "Repository"], type))
+                simplifyRepos(old[k, "Repository"], type) )
             cat("\n")
             answer <- askYesNo("Update?")
             if (is.na(answer)) {
@@ -24,7 +25,7 @@ function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(r
         update
     }
     if (is.null(lib.loc)) 
-        lib.loc <- .libPaths.0()
+        lib.loc <- .libPaths()
     if (type == "both" && (!missing(contriburl) || !is.null(available))) {
         stop("specifying 'contriburl' or 'available' requires a single type, not type = \"both\"")
     }
@@ -40,18 +41,18 @@ function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(r
     }
     else subset <- NULL
     if (is.null(oldPkgs)) {
-        oldPkgs <- old.packages.0(lib.loc = lib.loc, contriburl = contriburl, 
-            method = method, available = available, checkBuilt = checkBuilt)
+        oldPkgs <- old.packages(lib.loc = lib.loc, contriburl = contriburl, 
+            method = method, available = available, checkBuilt = checkBuilt, noDupl = noDupl)
         if (missing(repos)) 
             repos <- getOption("repos")
         if (!is.null(oldPkgs)) {
             pkg <- 0L
             while (pkg < nrow(oldPkgs)) {
                 pkg <- pkg + 1L
-                if (find.package.0(oldPkgs[pkg], lib.loc = lib.loc) != 
-                  find.package.0(oldPkgs[pkg], lib.loc = oldPkgs[pkg, 
+                if (find.package(oldPkgs[pkg], lib.loc = lib.loc) != 
+                  find.package(oldPkgs[pkg], lib.loc = oldPkgs[pkg, 
                     2])) {
-                  warning(sprintf("package '%s' in library.0 '%s' will not be updated", 
+                  warning(sprintf("package '%s' in library '%s' will not be updated", 
                     oldPkgs[pkg], oldPkgs[pkg, 2]), call. = FALSE, 
                     immediate. = TRUE)
                   oldPkgs <- oldPkgs[-pkg, , drop = FALSE]
@@ -63,7 +64,7 @@ function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(r
             return(invisible())
     }
     else if (!(is.matrix(oldPkgs) && is.character(oldPkgs))) 
-        stop("invalid 'oldPkgs'; must be a character vector or a result from old.packages.0()")
+        stop("invalid 'oldPkgs'; must be a character vector or a result from old.packages()")
     if (!is.null(subset)) {
         oldPkgs <- oldPkgs[rownames(oldPkgs) %in% subset, , drop = FALSE]
         if (nrow(oldPkgs) == 0) 
@@ -86,10 +87,11 @@ function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(r
             instlib <- update[, "LibPath"]
         libs <- unique(instlib)
         for (l in libs) if (type == "both") 
-            install.packages.0(update[instlib == l, "Package"], 
-                l, repos = repos, method = method, ..., type = type)
-        else install.packages.0(update[instlib == l, "Package"], 
+            install.packages(update[instlib == l, "Package"], 
+                l, repos = repos, method = method, ..., type = type,
+				noInstallRHOME = noInstallRHOME, saveOld = saveOld)
+        else install.packages(update[instlib == l, "Package"], 
             l, contriburl = contriburl, method = method, available = available, 
-            ..., type = type)
+            ..., type = type, noInstallRHOME = noInstallRHOME, saveOld = saveOld)
     }
 }

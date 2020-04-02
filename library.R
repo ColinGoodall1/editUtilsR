@@ -1,8 +1,8 @@
-library.0 <-
+library <-
 function (package, help, pos = 2, lib.loc = NULL, character.only = FALSE, 
     logical.return = FALSE, warn.conflicts, quietly = FALSE, 
     verbose = getOption("verbose"), mask.ok, exclude, include.only, 
-    attach.required = missing(include.only)) 
+    attach.required = missing(include.only), latest = TRUE) 
 {
     conf.ctrl <- getOption("conflicts.policy")
     if (is.character(conf.ctrl)) 
@@ -168,7 +168,7 @@ function (package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
         message("'verbose' and 'quietly' are both true; being verbose then ..")
     if (!missing(package)) {
         if (is.null(lib.loc)) 
-            lib.loc <- .libPaths.0()
+            lib.loc <- .libPaths()
         lib.loc <- lib.loc[dir.exists(lib.loc)]
         if (!character.only) 
             package <- as.character(substitute(package))
@@ -179,15 +179,15 @@ function (package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
         pkgname <- paste0("package:", package)
         newpackage <- is.na(match(pkgname, search()))
         if (newpackage) {
-            pkgpath <- find.package.0(package, lib.loc, quiet = TRUE, 
-                verbose = verbose)
+            pkgpath <- find.package(package, lib.loc, quiet = TRUE, 
+                verbose = verbose, latest = latest)
             if (length(pkgpath) == 0L) {
                 if (length(lib.loc) && !logical.return) 
                   stop(packageNotFoundError(package, lib.loc, 
                     sys.call()))
                 txt <- if (length(lib.loc)) 
                   gettextf("there is no package called %s", sQuote(package))
-                else gettext("no library.0 trees found in 'lib.loc'")
+                else gettext("no library trees found in 'lib.loc'")
                 if (logical.return) {
                   warning(txt, domain = NA)
                   return(FALSE)
@@ -215,12 +215,12 @@ function (package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
             deps <- unique(names(pkgInfo$Depends))
             depsOK <- isTRUE(conf.ctrl$depends.ok)
             if (depsOK) {
-                canMaskEnv <- dynGet("__library.0_can_mask__", 
+                canMaskEnv <- dynGet("__library_can_mask__", 
                   NULL)
                 if (is.null(canMaskEnv)) {
                   canMaskEnv <- new.env()
                   canMaskEnv$canMask <- union("base", conf.ctrl$can.mask)
-                  "__library.0_can_mask__" <- canMaskEnv
+                  "__library_can_mask__" <- canMaskEnv
                 }
                 canMaskEnv$canMask <- unique(c(package, deps, 
                   canMaskEnv$canMask))
@@ -294,7 +294,7 @@ function (package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
         if (!character.only) 
             help <- as.character(substitute(help))
         pkgName <- help[1L]
-        pkgPath <- find.package.0(pkgName, lib.loc, verbose = verbose)
+        pkgPath <- find.package(pkgName, lib.loc, verbose = verbose, latest = latest)
         docFiles <- c(file.path(pkgPath, "Meta", "package.rds"), 
             file.path(pkgPath, "INDEX"))
         if (file.exists(vignetteIndexRDS <- file.path(pkgPath, 
@@ -337,7 +337,7 @@ function (package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
     }
     else {
         if (is.null(lib.loc)) 
-            lib.loc <- .libPaths.0()
+            lib.loc <- .libPaths()
         db <- matrix(character(), nrow = 0L, ncol = 3L)
         nopkgs <- character()
         for (lib in lib.loc) {
@@ -373,12 +373,12 @@ function (package, help, pos = 2, lib.loc = NULL, character.only = FALSE,
         dimnames(db) <- list(NULL, c("Package", "LibPath", "Title"))
         if (length(nopkgs) && !missing(lib.loc)) {
             pkglist <- paste(sQuote(nopkgs), collapse = ", ")
-            msg <- sprintf(ngettext(length(nopkgs), "library.0 %s contains no packages", 
+            msg <- sprintf(ngettext(length(nopkgs), "library %s contains no packages", 
                 "libraries %s contain no packages"), pkglist)
             warning(msg, domain = NA)
         }
         y <- list(header = NULL, results = db, footer = NULL)
-        class(y) <- "library.0IQR"
+        class(y) <- "libraryIQR"
         return(y)
     }
     if (logical.return) 

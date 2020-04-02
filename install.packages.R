@@ -1,10 +1,10 @@
-install.packages.0 <-
+install.packages <-
 function (pkgs, lib, repos = getOption("repos"), contriburl = contrib.url(repos, 
     type), method, available = NULL, destdir = NULL, dependencies = NA, 
     type = getOption("pkgType"), configure.args = getOption("configure.args"), 
     configure.vars = getOption("configure.vars"), clean = FALSE, 
     Ncpus = getOption("Ncpus", 1L), verbose = getOption("verbose"), 
-    libs_only = FALSE, INSTALL_opts, quiet = FALSE, keep_outputs = FALSE, 
+    libs_only = FALSE, INSTALL_opts, quiet = FALSE, keep_outputs = FALSE, noInstallRHOME = TRUE, saveOld = TRUE,
     ...) 
 {
     type2 <- .Platform$pkgType
@@ -85,8 +85,8 @@ function (pkgs, lib, repos = getOption("repos"), contriburl = contrib.url(repos,
     if (!length(pkgs)) 
         return(invisible())
     if (missing(lib) || is.null(lib)) {
-        lib <- .libPaths.0()[1L]
-        if (!quiet && length(.libPaths.0()) > 1L) 
+        lib <- .libPaths(noRHOME=noInstallRHOME)[1L]
+        if (!quiet && length(.libPaths(noRHOME=noInstallRHOME)) > 1L) 
             message(sprintf(ngettext(length(pkgs), "Installing package into %s\n(as %s is unspecified)", 
                 "Installing packages into %s\n(as %s is unspecified)"), 
                 sQuote(lib), sQuote("lib")), domain = NA)
@@ -113,23 +113,23 @@ function (pkgs, lib, repos = getOption("repos"), contriburl = contrib.url(repos,
         userdir <- unlist(strsplit(Sys.getenv("R_LIBS_USER"), 
             .Platform$path.sep))[1L]
         if (interactive()) {
-            ans <- askYesNo(gettext("Would you like to use a personal library.0 instead?"), 
+            ans <- askYesNo(gettext("Would you like to use a personal library instead?"), 
                 default = FALSE)
             if (!isTRUE(ans)) 
-                stop("unable to install.packages.0")
+                stop("unable to install packages")
             lib <- userdir
             if (!file.exists(userdir)) {
-                ans <- askYesNo(gettextf("Would you like to create a personal library.0\n%s\nto install.packages.0 into?", 
+                ans <- askYesNo(gettextf("Would you like to create a personal library\n%s\nto install packages into?", 
                   sQuote(userdir)), default = FALSE)
                 if (!isTRUE(ans)) 
-                  stop("unable to install.packages.0")
+                  stop("unable to install packages")
                 if (!dir.create(userdir, recursive = TRUE)) 
                   stop(gettextf("unable to create %s", sQuote(userdir)), 
                     domain = NA)
-                .libPaths.0(c(userdir, .libPaths.0()))
+                .libPaths(c(userdir, .libPaths()))
             }
         }
-        else stop("unable to install.packages.0")
+        else stop("unable to install packages")
     }
     lib <- normalizePath(lib)
     if (length(pkgs) == 1L && missing(repos) && missing(contriburl)) {
@@ -226,7 +226,7 @@ function (pkgs, lib, repos = getOption("repos"), contriburl = contrib.url(repos,
         hasSrc <- hasArchs | needsCmp
         srcvers <- available[bins, "Version"]
         later <- as.numeric_version(binvers) < srcvers
-        action <- getOption("install.packages.0.compile.from.source", 
+        action <- getOption("install.packages.compile.from.source", 
             "interactive")
         if (!nzchar(Sys.which(Sys.getenv("MAKE", "make")))) 
             action <- "never"
@@ -251,7 +251,7 @@ function (pkgs, lib, repos = getOption("repos"), contriburl = contrib.url(repos,
                     later <- later & !hasSrc
                 }
                 else if (action == "never") {
-                  cat("  Binaries will be installed\n")
+                  cat("  Binaries will be installed, to install from source please provide a make program outside R, eg in Rtools\n")
                   later <- later & !hasSrc
                 }
             }
@@ -297,7 +297,7 @@ function (pkgs, lib, repos = getOption("repos"), contriburl = contrib.url(repos,
             collapse = ", ")), "\n", domain = NA)
         flush.console()
     }
-    else if (getOption("install.packages.0.check.source", "yes") %in% 
+    else if (getOption("install.packages.check.source", "yes") %in% 
         "yes" && (type %in% "win.binary" || startsWith(type, 
         "mac.binary"))) {
         if (missing(contriburl) && is.null(available) && !is.null(repos)) {
@@ -373,7 +373,7 @@ function (pkgs, lib, repos = getOption("repos"), contriburl = contrib.url(repos,
         if (!file.exists(file.path(R.home("bin"), "INSTALL"))) 
             stop("This version of R is not set up to install source packages\nIf it was installed from an RPM, you may need the R-devel RPM")
     }
-    libpath <- .libPaths.0()
+    libpath <- .libPaths()
     libpath <- libpath[!libpath %in% .Library]
     if (length(libpath)) 
         libpath <- paste(libpath, collapse = .Platform$path.sep)

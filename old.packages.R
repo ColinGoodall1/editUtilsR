@@ -1,10 +1,10 @@
-old.packages.0 <-
+old.packages <-
 function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(repos, 
-    type), instPkgs = installed.packages.0(lib.loc = lib.loc, ...), 
-    method, available = NULL, checkBuilt = FALSE, ..., type = getOption("pkgType")) 
+    type), instPkgs = installed.packages(lib.loc = lib.loc, ...), 
+    method, available = NULL, checkBuilt = FALSE, ..., type = getOption("pkgType"), noDupl = TRUE) 
 {
     if (is.null(lib.loc)) 
-        lib.loc <- .libPaths.0()
+        lib.loc <- .libPaths()
     if (!missing(instPkgs)) {
         if (!is.matrix(instPkgs) || !is.character(instPkgs[, 
             "Package"])) 
@@ -19,7 +19,14 @@ function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(r
     update <- NULL
     currentR <- minorR <- getRversion()
     minorR[[c(1L, 3L)]] <- 0L
+	if(noDupl){
+		toCheck <- !duplicated(instPkgs[,"Package"])
+		cat(sprintf("found %s installed packages with %s not duplicated\n",length(toCheck),sum(toCheck)))
+		cat("duplicated packages are:",instPkgs[!toCheck,"Package"],"\n")
+	} else toCheck <- rep(TRUE,nrow(instPkgs))
     for (k in 1L:nrow(instPkgs)) {
+		if (!toCheck[k])
+			next
         if (instPkgs[k, "Priority"] %in% "base") 
             next
         z <- match(instPkgs[k, "Package"], available[, "Package"])

@@ -1,5 +1,5 @@
-find.package.0 <-
-function (package = NULL, lib.loc = NULL, quiet = FALSE, verbose = getOption("verbose")) 
+find.package <-
+function (package = NULL, lib.loc = NULL, quiet = FALSE, verbose = getOption("verbose"), latest = TRUE, showVersion = FALSE) 
 {
     if (is.null(package) && is.null(lib.loc) && !verbose) {
         return(path.package())
@@ -14,9 +14,10 @@ function (package = NULL, lib.loc = NULL, quiet = FALSE, verbose = getOption("ve
     if (!length(package)) 
         return(character())
     if (use_loaded <- is.null(lib.loc)) 
-        lib.loc <- .libPaths.0()
+        lib.loc <- .libPaths()
     bad <- character()
     out <- character()
+	if(showVersion) versions <- matrix("",0,5,dimnames=list(NULL,c("Package","Version","Valid","Order","Lib")))
     for (pkg in package) {
         paths <- file.path(lib.loc, pkg)
         paths <- paths[file.exists(file.path(paths, "DESCRIPTION"))]
@@ -51,6 +52,10 @@ function (package = NULL, lib.loc = NULL, quiet = FALSE, verbose = getOption("ve
             ok <- (apply(!is.na(db), 1L, all) & (db[, "Package"] == 
                 pkg) & (grepl(valid_package_version_regexp, db[, 
                 "Version"])))
+			if(showVersion){
+			    pkgversions <- cbind(db[,"Package"],db[,"Version"],as.character(ok),Order=rep(NA,length(paths)),paths)
+				pkgversions[ok,"Order"] <- seq(sum(ok))
+			}
             paths <- paths[ok]
         }
         if (length(paths) == 0L) {
@@ -58,12 +63,29 @@ function (package = NULL, lib.loc = NULL, quiet = FALSE, verbose = getOption("ve
             next
         }
         if (length(paths) > 1L) {
-            if (verbose) 
-                warning(gettextf("package %s found more than once, using the first from\n  %s", 
-                  sQuote(pkg), paste(dQuote(paths), collapse = ",\n  ")), 
-                  domain = NA)
-            paths <- paths[1L]
+			if(latest){
+				v <- db[ok,"Version"]
+				vs <- strsplit(v,"[.-]")
+                # could be nested, TBD, split on ., order with split on - within
+                vsf <- lapply(lapply(vs,format,justify="right"),function(x)gsub(" ","0",x))
+				vn <- sapply(vsf,paste,collapse=".")
+				o <- order(vn,decreasing=T)
+				if(verbose){
+					warning(gettextf("package %s found more than once,\n  with versions %s,\n  using version %s from library %d of\n  %s", 
+					  sQuote(pkg), paste(v, collapse = ", "), v[o[1L]], o[1L], paste(dQuote(paths), collapse = ",\n  ")), 
+					  domain = NA)
+				}
+				if(showVersion) pkgversions[ok,"Order"] <- as.character(o)
+				paths <- paths[o[1L]]
+            } else {
+				if (verbose) 
+					warning(gettextf("package %s found more than once, using the first from\n  %s", 
+					  sQuote(pkg), paste(dQuote(paths), collapse = ",\n  ")), 
+					  domain = NA)
+				paths <- paths[1L]
+			}
         }
+		if(showVersion) versions <- rbind(versions,pkgversions)
         out <- c(out, paths)
     }
     if (!quiet && length(bad)) {
@@ -72,5 +94,6 @@ function (package = NULL, lib.loc = NULL, quiet = FALSE, verbose = getOption("ve
         for (pkg in bad) warning(gettextf("there is no package called %s", 
             sQuote(pkg)), domain = NA)
     }
+	if(showVersion){ rownames(versions) <- NULL; return(versions) }
     out
 }
