@@ -12,7 +12,7 @@ old.packages
 update.packages
 
 
-motivation:-
+# motivation:-
 
 The set of package / library functions has in many ways stood the test of time, but can be confusing and unintuitive.
 It's been a while since I did this.   Hark back to the days of John, Rick, and Allan and providing lots of S comments/bug reports, in the 80s.
@@ -70,7 +70,7 @@ The personal library defaults to Documents/R/win-library/x.y, with separate fold
 
 ---------------------------------------------------
 
-new function arguments:-
+# new function arguments:-
 
 noDupl                  skip duplicate packages, default TRUE
 						argument to old.packages and update.packages (which passes the argument to old.packages)
@@ -92,7 +92,7 @@ saveOld                 save the previous version of the library, in subfolder o
 						argument to install.packages and update.packages (passes to install.packages)
 						
 
-issues:-
+# issues:-
 
 internal objects cannot be referenced in an edited function (special compilation needed?).  I haven't dipped into source code (yet).
 thus:-
@@ -101,7 +101,7 @@ thus:-
 (3) update.packages() references simplifyRepos, getDependencies, etc, edits provided but function does not update packages, needs a core team intervention?
 (4) no digging into .install.winbinary() called from install.packages()
 
-sample calls:-
+# sample calls:-
 
 base:::.libPaths()
 .libPaths()               # accesses .lib.loc through base:::.libPaths()
