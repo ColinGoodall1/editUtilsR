@@ -145,5 +145,5 @@ find.package("nlme",verbose=T,latest=F)
 find.package(c("class","nlme"),verbose=T,latest=T,showVersion=T)
 find.package(c("class","nlme"),verbose=T,latest=F,showVersion=T)
 
-update.packages()   # does not execute, simplifyRepos, getDependencies not found
+update.packages()
 
