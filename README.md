@@ -120,9 +120,9 @@ thus:-
 
 (1) new .libPaths with additional argument noRHOME calls base:::.libPaths() to access .lib.loc
 
-(2) installed.libraries() references .instPkgFields etc, no edits provided
+(2) installed.packages() references .instPkgFields etc, no edits provided
 
-(3) update.packages() references simplifyRepos, getDependencies, etc, edits provided but function does not update packages, needs a core team intervention?
+(3) install.packages(), update.packages() now reference utils:::simplifyRepos(), utils:::getDependencies()
 
 (4) no digging into .install.winbinary() called from install.packages()
 
