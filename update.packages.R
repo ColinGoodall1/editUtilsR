@@ -12,7 +12,7 @@ function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(r
                 "installed in", old[k, "LibPath"], if (checkBuilt) 
                   paste("built under R", old[k, "Built"]), "\n", 
                 "Version", old[k, "ReposVer"], "available at", 
-                simplifyRepos(old[k, "Repository"], type) )
+                utils:::simplifyRepos(old[k, "Repository"], type) )
             cat("\n")
             answer <- askYesNo("Update?")
             if (is.na(answer)) {
