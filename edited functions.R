@@ -310,7 +310,7 @@ function (pkgs, lib, repos = getOption("repos"), contriburl = contrib.url(repos,
             repos <- getOption("repos")
         available <- available.packages(contriburl = contriburl, 
             method = method, fields = "NeedsCompilation", ...)
-        pkgs <- getDependencies(pkgs, dependencies, available, 
+        pkgs <- utils:::getDependencies(pkgs, dependencies, available, 
             lib, ...)
         getDeps <- FALSE
         av2 <- available.packages(contriburl = contrib.url(repos, 
@@ -560,7 +560,7 @@ function (pkgs, lib, repos = getOption("repos"), contriburl = contrib.url(repos,
         available <- available.packages(contriburl = contriburl, 
             method = method, ...)
     if (getDeps) 
-        pkgs <- getDependencies(pkgs, dependencies, available, 
+        pkgs <- utils:::getDependencies(pkgs, dependencies, available, 
             lib, ...)
     foundpkgs <- download.packages(pkgs, destdir = tmpd, available = available, 
         contriburl = contriburl, method = method, type = "source", 
@@ -1157,7 +1157,7 @@ function (lib.loc = NULL, repos = getOption("repos"), contriburl = contrib.url(r
                 "installed in", old[k, "LibPath"], if (checkBuilt) 
                   paste("built under R", old[k, "Built"]), "\n", 
                 "Version", old[k, "ReposVer"], "available at", 
-                simplifyRepos(old[k, "Repository"], type) )
+                utils:::simplifyRepos(old[k, "Repository"], type) )
             cat("\n")
             answer <- askYesNo("Update?")
             if (is.na(answer)) {
